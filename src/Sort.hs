@@ -1,4 +1,4 @@
-module Sort (insertionSort, mergeSort) where
+module Sort (bubbleSort, insertionSort, mergeSort) where
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -22,3 +22,7 @@ mergeSort xs = _sort xs $ length xs
                 half = len `div` 2
                 (left, right) = splitAt half xs in
                 merge (_sort left half) (_sort right $ half + 1)
+
+bubbleSort :: Ord a => [a] -> [a]
+bubbleSort [] = []
+bubbleSort (x:xs) = undefined
