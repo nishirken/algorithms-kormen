@@ -24,5 +24,8 @@ mergeSort xs = _sort xs $ length xs
                 merge (_sort left half) (_sort right $ half + 1)
 
 bubbleSort :: Ord a => [a] -> [a]
-bubbleSort [] = []
-bubbleSort (x:xs) = undefined
+bubbleSort xs = outer xs 0
+    where
+        outer ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
+        inner [z] = [z]
+        inner (z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
