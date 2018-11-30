@@ -1,4 +1,4 @@
-module Sort (bubbleSort, insertionSort, mergeSort) where
+module Sort (bubbleSort, insertionSort, mergeSort, maxHeapify, Heap (..)) where
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -29,3 +29,14 @@ bubbleSort xs = outer xs 0
         outer ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
         inner [z] = [z]
         inner (z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
+
+-- Heap sort
+
+data Heap a = Heap {
+    value :: a
+    , left :: Heap a
+    , right :: Heap a
+  } | Empty deriving (Show, Eq)
+
+maxHeapify :: Ord a => Heap a -> a -> Heap a
+maxHeapify heap value = undefined
