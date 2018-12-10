@@ -1,4 +1,12 @@
-module Sort (bubbleSort, insertionSort, mergeSort, maxHeapify, buildMaxHeap, heapSort, swap) where
+module Sort (
+  bubbleSort
+  , insertionSort
+  , mergeSort
+  , maxHeapify
+  , buildMaxHeap
+  , heapSort
+  , swap
+  ) where
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -75,7 +83,8 @@ buildMaxHeap xs = iter xs (div (length xs - 1) 2)
   where
     iter :: Ord a => [a] -> Int -> [a]
     iter ys 0 = ys
-    iter ys len = iter (maxHeapify ys (len - 1) (length xs - 1)) (len - 1)
+    iter ys len =
+      let next = len - 1 in iter (maxHeapify ys next (length xs - 1)) next
 
 heapSort :: Ord a => [a] -> [a]
 heapSort xs = iter heap (length xs - 1) (length xs - 1)
