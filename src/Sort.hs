@@ -1,4 +1,4 @@
-module Sort (bubbleSort, insertionSort, mergeSort, maxHeapify, Heap (..)) where
+module Sort (bubbleSort, insertionSort, mergeSort, heapSort) where
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -32,11 +32,19 @@ bubbleSort xs = outer xs 0
 
 -- Heap sort
 
-data Heap a = Heap {
-    value :: a
-    , left :: Heap a
-    , right :: Heap a
-  } | Empty deriving (Show, Eq)
+type Index = Int
 
-maxHeapify :: Ord a => Heap a -> a -> Heap a
-maxHeapify heap value = undefined
+parent :: Index -> Index
+parent i = div i 2
+
+left :: Index -> Index
+left i = 2 * i
+
+right :: Index -> Index
+right i = 2 * i + 1
+
+maxHeapify :: Ord a => [a] -> a -> [a]
+maxHeapify heap = undefined
+
+heapSort :: Ord a => [a] -> [a]
+heapSort = undefined
