@@ -1,4 +1,4 @@
-module Sort (bubbleSort, insertionSort, mergeSort, heapSort) where
+module Sort (bubbleSort, insertionSort, mergeSort, maxHeapify, buildMaxHeap, heapSort, swap) where
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -34,17 +34,53 @@ bubbleSort xs = outer xs 0
 
 type Index = Int
 
-parent :: Index -> Index
-parent i = div i 2
-
 left :: Index -> Index
-left i = 2 * i
+left i = 2 * i + 1
 
 right :: Index -> Index
-right i = 2 * i + 1
+right i = 2 * i + 2
 
-maxHeapify :: Ord a => [a] -> a -> [a]
-maxHeapify heap = undefined
+swap :: Eq a => [a] -> Index -> Index -> [a]
+swap [] _ _ = []
+swap [x] _ _ = [x]
+swap xs index newIndex =
+  if correct index && correct newIndex && index < newIndex
+    then left ++ [newItem] ++ middle ++ [item] ++ right
+    else error $ "Incorrect index in replace" ++ show (index, newIndex)
+      where
+        correct i = i < length xs && i >= 0
+        item = xs !! index
+        newItem = xs !! newIndex
+        left = take index xs
+        middle = take (newIndex - index - 1) (drop (index + 1) xs)
+        right = drop (newIndex + 1) xs
+
+maxHeapify :: Ord a => [a] -> Index -> Int -> [a]
+maxHeapify heap i heapSize =
+  if i == largest
+    then heap
+    else maxHeapify (swap heap i largest) largest heapSize
+      where
+        l = left i
+        r = right i
+        getLargest :: Index -> Index -> Index
+        getLargest childIndex currentIndex =
+          if childIndex <= heapSize && ((heap !! childIndex) > (heap !! currentIndex))
+            then childIndex
+            else currentIndex
+        largest = getLargest r $ getLargest l i
+
+buildMaxHeap :: Ord a => [a] -> [a]
+buildMaxHeap xs = iter xs (div (length xs - 1) 2)
+  where
+    iter :: Ord a => [a] -> Int -> [a]
+    iter ys 0 = ys
+    iter ys len = iter (maxHeapify ys (len - 1) (length xs - 1)) (len - 1)
 
 heapSort :: Ord a => [a] -> [a]
-heapSort = undefined
+heapSort xs = iter heap (length xs - 1) (length xs - 1)
+  where
+    heap = buildMaxHeap xs
+    iter :: Ord a => [a] -> Int -> Int -> [a]
+    iter acc 1 _ = acc
+    iter acc i heapSize = iter (maxHeapify (swap acc 0 i) 1 heapSize) (i - 1) (heapSize - 1)
