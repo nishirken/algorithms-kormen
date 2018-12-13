@@ -11,6 +11,7 @@ import Sort (
   , maxHeapify
   , swap
   , buildMaxHeap
+  , heapSort
   )
 
 sortSpec :: SpecWith ()
@@ -33,6 +34,8 @@ sortSpec =
 
       it "buildMaxHeap" $
         let
-          expected = [84, 22, 19]
+          expected = [84, 22, 19, 10, 3, 17, 6, 5, 9]
           testList = [5, 3, 17, 10, 84, 19, 6, 22, 9]
           in buildMaxHeap testList `shouldBe` expected
+
+      it "Heap sort" $ property $ \x -> heapSort (x :: [Int]) `shouldBe` sort x

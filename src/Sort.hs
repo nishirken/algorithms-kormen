@@ -79,7 +79,7 @@ maxHeapify heap i heapSize =
         largest = getLargest r $ getLargest l i
 
 buildMaxHeap :: Ord a => [a] -> [a]
-buildMaxHeap xs = iter xs (div (length xs - 1) 2)
+buildMaxHeap xs = iter xs (div (length xs) 2)
   where
     iter :: Ord a => [a] -> Int -> [a]
     iter ys 0 = ys
@@ -87,9 +87,9 @@ buildMaxHeap xs = iter xs (div (length xs - 1) 2)
       let next = len - 1 in iter (maxHeapify ys next (length xs - 1)) next
 
 heapSort :: Ord a => [a] -> [a]
-heapSort xs = iter heap (length xs - 1) (length xs - 1)
+heapSort xs = iter heap (length xs - 1)
   where
     heap = buildMaxHeap xs
-    iter :: Ord a => [a] -> Int -> Int -> [a]
-    iter acc 1 _ = acc
-    iter acc i heapSize = iter (maxHeapify (swap acc 0 i) 1 heapSize) (i - 1) (heapSize - 1)
+    iter :: Ord a => [a] -> Int -> [a]
+    iter acc 1 = acc
+    iter acc i = iter (maxHeapify (swap acc 0 i) 0 i) (i - 1)
