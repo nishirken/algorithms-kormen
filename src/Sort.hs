@@ -94,3 +94,12 @@ heapSort xs = iter heap (length xs - 1)
     iter :: Ord a => [a] -> Int -> [a]
     iter acc 0 = acc
     iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+
+-- priority queue
+
+heapMaximum :: Ord a => [a] -> a
+heapMaximum = head
+
+heapExtractMax :: Ord a => [a] -> (a, [a])
+heapExtractMax heap =
+  (head heap, maxHeapify (swap heap 0 (last heap)) 0 (length heap - 1))
