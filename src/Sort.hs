@@ -6,7 +6,10 @@ module Sort (
   , buildMaxHeap
   , heapSort
   , swap
+  , quickSort
   ) where
+
+import Data.List (foldl')
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
@@ -94,3 +97,15 @@ heapSort xs = iter heap (length xs - 1)
     iter :: Ord a => [a] -> Int -> [a]
     iter acc 0 = acc
     iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+
+quickSort :: Ord a => [a] -> [a]
+quickSort [] = []
+quickSort (x:xs) = let (lt, eq, gt) = partition [] [] [] xs in
+  (quickSort lt) ++ eq ++ (quickSort gt)
+    where
+      partition :: Ord a => [a] -> [a] -> [a] -> [a] -> ([a], [a], [a])
+      partition lt eq gt [] = (lt, eq, gt)
+      partition lt eq gt (y:ys) = case (x `compare` y) of
+        LT -> partition lt eq (x:gt) ys
+        EQ -> partition lt (x:eq) gt ys
+        GT -> partition (x:lt) eq gt ys
