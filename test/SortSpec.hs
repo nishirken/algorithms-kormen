@@ -1,7 +1,7 @@
 module SortSpec where
 
-import Test.Hspec (context, describe, it, SpecWith)
-import Test.QuickCheck (property)
+import Test.Hspec (context, describe, it, SpecWith, shouldBe)
+import Test.QuickCheck (Property, property)
 import Data.List (sort)
 import Sort (
   bubbleSort
@@ -12,7 +12,11 @@ import Sort (
   , swap
   , buildMaxHeap
   , heapSort
+  , quickSort
   )
+
+
+testSort f = property $ \xs -> f (xs :: [Int]) `shouldBe` sort xs
 
 sortSpec :: SpecWith ()
 sortSpec =
@@ -22,9 +26,10 @@ sortSpec =
       it "works with single" $ swap [1] 0 0 `shouldBe` [1]
       it "works" $ swap [1, 4, 5, 6, 7] 1 3 `shouldBe` [1, 6, 5, 4, 7]
 
-    it "Insertion" $ property $ \x -> insertionSort (x :: [Int]) `shouldBe` sort x
-    it "Merge" $ property $ \x -> mergeSort (x :: [Int]) `shouldBe` sort x
-    it "Bubble" $ property $ \x -> bubbleSort (x :: [Int]) `shouldBe` sort x
+    it "Insertion" $ testSort insertionSort
+    it "Merge" $ testSort mergeSort
+    it "Bubble" $ testSort bubbleSort
+
     context "Heap sort" $ do
       it "maxHeapify" $
         let
@@ -38,4 +43,6 @@ sortSpec =
           testList = [5, 3, 17, 10, 84, 19, 6, 22, 9]
           in buildMaxHeap testList `shouldBe` expected
 
-      it "Heap sort" $ property $ \x -> heapSort (x :: [Int]) `shouldBe` sort x
+      it "Heap sort" $ testSort heapSort
+
+    it "quickSort" $ testSort quickSort
