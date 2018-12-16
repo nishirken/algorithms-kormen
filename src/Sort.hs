@@ -100,12 +100,10 @@ heapSort xs = iter heap (length xs - 1)
 
 quickSort :: Ord a => [a] -> [a]
 quickSort [] = []
-quickSort (x:xs) = let (lt, eq, gt) = partition [] [] [] xs in
-  (quickSort lt) ++ eq ++ (quickSort gt)
-    where
-      partition :: Ord a => [a] -> [a] -> [a] -> [a] -> ([a], [a], [a])
-      partition lt eq gt [] = (lt, eq, gt)
-      partition lt eq gt (y:ys) = case (x `compare` y) of
-        LT -> partition lt eq (x:gt) ys
-        EQ -> partition lt (x:eq) gt ys
-        GT -> partition (x:lt) eq gt ys
+quickSort (x:xs) = let (lt, eq, gt) = partition [] [x] [] xs in quickSort lt ++ eq ++ quickSort gt
+  where
+    partition lt eq gt [] = (lt, eq, gt)
+    partition lt eq gt (y:ys) = case x `compare` y of
+      LT -> partition lt eq (y:gt) ys
+      EQ -> partition lt (y:eq) gt ys
+      GT -> partition (y:lt) eq gt ys
