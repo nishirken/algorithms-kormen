@@ -9,8 +9,6 @@ module Sort (
   , quickSort
   ) where
 
-import Data.List (foldl')
-
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldr insert []
     where

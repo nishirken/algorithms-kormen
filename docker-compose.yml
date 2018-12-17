@@ -9,3 +9,4 @@ services:
       - ./src:/app/src:Z
       - ./package.yaml:/app/package.yaml:Z
       - ./stack.yaml:/app/stack.yaml:Z
+      - ./benchmarks:/app/benchmarks:Z
