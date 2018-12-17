@@ -24,9 +24,12 @@ dependencies:
 
 library:
   source-dirs: src
+  dependencies:
+    - heaps
+    - vector
 
 executables:
-  algorithms-kormen-exe:
+  algo-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -34,10 +37,27 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - vector
+    - heaps
     - algorithms-kormen
 
+  algo-bench:
+    benchmarks:
+    main:                Benchmarks.hs
+    source-dirs:         benchmarks
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - vector
+    - heaps
+    - algorithms-kormen
+    - criterion
+    - QuickCheck
+
 tests:
-  algorithms-kormen-test:
+  algo-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -45,6 +65,8 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - vector
+    - heaps
     - algorithms-kormen
     - hspec
     - QuickCheck

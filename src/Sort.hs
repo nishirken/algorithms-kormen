@@ -1,47 +1,56 @@
+{-# LANGUAGE BangPatterns #-}
+
 module Sort (
   bubbleSort
   , insertionSort
   , mergeSort
   , maxHeapify
   , buildMaxHeap
+  , heapSort'
   , heapSort
   , swap
   , quickSort
+  , optimalSort
   ) where
 
-import Data.List (foldl')
+import Control.Exception.Base (ArrayException (IndexOutOfBounds), throw)
+import Data.List (foldl', partition)
+import qualified Data.Vector as V
+import qualified Data.Heap as H
 
 insertionSort :: Ord a => [a] -> [a]
-insertionSort = foldr insert []
-    where
-        insert :: Ord a => a -> [a] -> [a]
-        insert x [] = [x]
-        insert x acc@(y:ys) = if x > y then y : insert x ys else x : acc
+insertionSort = foldl' insert []
+  where
+    insert :: Ord a => [a] -> a -> [a]
+    insert [] x = [x]
+    insert !acc@(y:ys) x = if x > y then y : (insert ys x) else x : acc
 
 mergeSort :: Ord a => [a] -> [a]
 mergeSort xs = _sort xs $ length xs
-    where
-        merge :: Ord a => [a] -> [a] -> [a]
-        merge [] x = x
-        merge x [] = x
-        merge left@(x:xs) right@(y:ys) = if x < y then x : merge xs right else y : merge left ys
-        _sort :: Ord a => [a] -> Int -> [a]
-        _sort [x] _ = [x]
-        _sort [] _ = []
-        _sort xs len =
-            let
-                half = len `div` 2
-                (left, right) = splitAt half xs in
-                merge (_sort left half) (_sort right $ half + 1)
+  where
+    merge :: Ord a => [a] -> [a] -> [a]
+    merge [] x = x
+    merge x [] = x
+    merge !left@(x:xs) !right@(y:ys) = if x < y then x : merge xs right else y : merge left ys
+    _sort :: Ord a => [a] -> Int -> [a]
+    _sort [x] _ = [x]
+    _sort [] _ = []
+    _sort xs len =
+      let
+        !half = len `div` 2
+        !(left, right) = splitAt half xs in
+        merge (_sort left half) (_sort right $ half + 1)
 
 bubbleSort :: Ord a => [a] -> [a]
 bubbleSort xs = outer xs 0
-    where
-        outer ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
-        inner [z] = [z]
-        inner (z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
+  where
+    outer !ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
+    inner [z] = [z]
+    inner !(z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
 
 -- Heap sort
+
+-- unefficient realisation, even with vectors. 
 
 type Index = Int
 
@@ -51,22 +60,14 @@ left i = 2 * i + 1
 right :: Index -> Index
 right i = 2 * i + 2
 
-swap :: Eq a => [a] -> Index -> Index -> [a]
-swap [] _ _ = []
-swap [x] _ _ = [x]
+swap :: Eq a => V.Vector a -> Index -> Index -> V.Vector a
 swap xs index newIndex =
-  if correct index && correct newIndex && index < newIndex
-    then left ++ [newItem] ++ middle ++ [item] ++ right
-    else error $ "Incorrect index in replace" ++ show (index, newIndex)
-      where
-        correct i = i < length xs && i >= 0
-        item = xs !! index
-        newItem = xs !! newIndex
-        left = take index xs
-        middle = take (newIndex - index - 1) (drop (index + 1) xs)
-        right = drop (newIndex + 1) xs
+  if correct index && correct newIndex && index <= newIndex
+    then V.unsafeUpd xs [(index, V.unsafeIndex xs newIndex), (newIndex, V.unsafeIndex xs index)]
+    else throw $ IndexOutOfBounds $ "Incorrect index in swap" ++ show (index, newIndex)
+      where correct i = i < V.length xs && i >= 0
 
-maxHeapify :: Ord a => [a] -> Index -> Int -> [a]
+maxHeapify :: Ord a => V.Vector a -> Index -> Int -> V.Vector a
 maxHeapify heap i heapSize =
   if i == largest
     then heap
@@ -76,34 +77,47 @@ maxHeapify heap i heapSize =
         r = right i
         getLargest :: Index -> Index -> Index
         getLargest childIndex currentIndex =
-          if childIndex <= heapSize && ((heap !! childIndex) > (heap !! currentIndex))
+          if childIndex <= heapSize && ((heap V.! childIndex) > (heap V.! currentIndex))
             then childIndex
             else currentIndex
         largest = getLargest r $ getLargest l i
 
-buildMaxHeap :: Ord a => [a] -> [a]
-buildMaxHeap xs = iter xs (div (length xs) 2)
+buildMaxHeap :: Ord a => V.Vector a -> V.Vector a
+buildMaxHeap xs = iter xs (div (V.length xs) 2)
   where
-    iter :: Ord a => [a] -> Int -> [a]
+    iter :: Ord a => V.Vector a -> Int -> V.Vector a
     iter ys 0 = ys
     iter ys len =
-      let next = len - 1 in iter (maxHeapify ys next (length xs - 1)) next
+      let next = len - 1 in iter (maxHeapify ys next (V.length xs - 1)) next
+
+heapSort' :: Ord a => V.Vector a -> V.Vector a
+heapSort' xs = if V.null xs then xs
+  else iter heap (V.length xs - 1)
+    where
+      heap = buildMaxHeap xs
+      iter :: Ord a => V.Vector a -> Int -> V.Vector a
+      iter acc 0 = acc
+      iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+
+-- more efficient, but much less than quickSort
 
 heapSort :: Ord a => [a] -> [a]
-heapSort [] = []
-heapSort xs = iter heap (length xs - 1)
-  where
-    heap = buildMaxHeap xs
-    iter :: Ord a => [a] -> Int -> [a]
-    iter acc 0 = acc
-    iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+heapSort = H.sort
+
+-- quick sort
 
 quickSort :: Ord a => [a] -> [a]
 quickSort [] = []
-quickSort (x:xs) = let (lt, eq, gt) = partition [] [x] [] xs in quickSort lt ++ eq ++ quickSort gt
+quickSort (x:xs) = quickSort lt ++ eq ++ quickSort gt
   where
     partition lt eq gt [] = (lt, eq, gt)
     partition lt eq gt (y:ys) = case x `compare` y of
       LT -> partition lt eq (y:gt) ys
       EQ -> partition lt (y:eq) gt ys
       GT -> partition (y:lt) eq gt ys
+    (lt, eq, gt) = partition [] [x] [] xs
+
+optimalSort :: Ord a => [a] -> [a]
+optimalSort [] = []
+optimalSort [x] = [x]
+optimalSort xs = if ((== 10) . length . take 10) xs then quickSort xs else insertionSort xs
