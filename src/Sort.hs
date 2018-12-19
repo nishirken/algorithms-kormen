@@ -13,33 +13,33 @@ import Data.List (foldl')
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldl' insert []
-    where
-        insert :: Ord a => [a] -> a -> [a]
-        insert [] x = [x]
-        insert acc@(y:ys) x = if x > y then y : insert ys x else x : acc
+  where
+    insert :: Ord a => [a] -> a -> [a]
+    insert [] x = [x]
+    insert acc@(y:ys) x = if x > y then y : (insert ys x) else x : acc
 
 mergeSort :: Ord a => [a] -> [a]
 mergeSort xs = _sort xs $ length xs
-    where
-        merge :: Ord a => [a] -> [a] -> [a]
-        merge [] x = x
-        merge x [] = x
-        merge left@(x:xs) right@(y:ys) = if x < y then x : merge xs right else y : merge left ys
-        _sort :: Ord a => [a] -> Int -> [a]
-        _sort [x] _ = [x]
-        _sort [] _ = []
-        _sort xs len =
-            let
-                half = len `div` 2
-                (left, right) = splitAt half xs in
-                merge (_sort left half) (_sort right $ half + 1)
+  where
+    merge :: Ord a => [a] -> [a] -> [a]
+    merge [] x = x
+    merge x [] = x
+    merge left@(x:xs) right@(y:ys) = if x < y then x : merge xs right else y : merge left ys
+    _sort :: Ord a => [a] -> Int -> [a]
+    _sort [x] _ = [x]
+    _sort [] _ = []
+    _sort xs len =
+      let
+        half = len `div` 2
+        (left, right) = splitAt half xs in
+        merge (_sort left half) (_sort right $ half + 1)
 
 bubbleSort :: Ord a => [a] -> [a]
 bubbleSort xs = outer xs 0
-    where
-        outer ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
-        inner [z] = [z]
-        inner (z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
+  where
+    outer ys counter = if counter == length ys then ys else outer (inner ys) (counter + 1)
+    inner [z] = [z]
+    inner (z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
 
 -- Heap sort
 
