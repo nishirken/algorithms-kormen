@@ -9,12 +9,14 @@ module Sort (
   , quickSort
   ) where
 
+import Data.List (foldl')
+
 insertionSort :: Ord a => [a] -> [a]
-insertionSort = foldr insert []
+insertionSort = foldl' insert []
     where
-        insert :: Ord a => a -> [a] -> [a]
-        insert x [] = [x]
-        insert x acc@(y:ys) = if x > y then y : insert x ys else x : acc
+        insert :: Ord a => [a] -> a -> [a]
+        insert [] x = [x]
+        insert acc@(y:ys) x = if x > y then y : insert ys x else x : acc
 
 mergeSort :: Ord a => [a] -> [a]
 mergeSort xs = _sort xs $ length xs

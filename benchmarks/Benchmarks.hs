@@ -3,9 +3,7 @@ import Criterion.Main (defaultMainWith, defaultConfig, bgroup, bench, nf, Benchm
 import Criterion.Types (reportFile)
 import Test.QuickCheck (generate, vectorOf, arbitrary, Gen)
 
-fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
-
-benchList = [0..5] ++ (drop 1 $ map (* 3) $ take 10 fibs) ++ (drop 15 $ map (* 8) $ take 10 fibs)
+benchList = [0, 3, 50, 1000, 10000, 1000000]
 
 benchCases :: ([Int] -> [Int]) -> String -> Benchmark
 benchCases sortFn benchName = bgroup benchName $ map makeOneBench benchList
