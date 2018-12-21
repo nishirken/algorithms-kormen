@@ -18,10 +18,8 @@ benchCases sortFn benchName benchList = bgroup benchName $ map makeOneBench benc
 
 main :: IO ()
 main = defaultMainWith defaultConfig [
-    benchCases insertionSort "insertion sort" defaultBenchList
+    -- benchCases insertionSort "insertion sort" defaultBenchList
     -- , benchCases mergeSort "merge sort" defaultBenchList
     -- , benchCases bubbleSort "bubble sort" minBenchList
-    -- , benchCases quickSort "quick sort" defaultBenchList
-    -- benchCases quickSort "quick sort" [10000]
-    -- , benchCases heapSort "heap sort" [10000]
+    benchCases quickSort "quick sort" defaultBenchList
   ]

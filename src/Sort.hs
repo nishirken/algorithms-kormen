@@ -9,7 +9,7 @@ module Sort (
   , quickSort
   ) where
 
-import Data.List (foldl')
+import Data.List (foldl', partition)
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldl' insert []
@@ -100,10 +100,11 @@ heapSort xs = iter heap (length xs - 1)
 
 quickSort :: Ord a => [a] -> [a]
 quickSort [] = []
-quickSort (x:xs) = let (lt, eq, gt) = partition [] [x] [] xs in quickSort lt ++ eq ++ quickSort gt
+quickSort (x:xs) = quickSort lt ++ eq ++ quickSort gt
   where
     partition lt eq gt [] = (lt, eq, gt)
     partition lt eq gt (y:ys) = case x `compare` y of
       LT -> partition lt eq (y:gt) ys
       EQ -> partition lt (y:eq) gt ys
       GT -> partition (y:lt) eq gt ys
+    (lt, eq, gt) = partition [] [x] [] xs
