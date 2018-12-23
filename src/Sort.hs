@@ -9,7 +9,9 @@ module Sort (
   , quickSort
   ) where
 
+import Control.Exception.Base (ArrayException (IndexOutOfBounds), throw)
 import Data.List (foldl', partition)
+import qualified Data.Vector as V
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldl' insert []
@@ -43,6 +45,8 @@ bubbleSort xs = outer xs 0
 
 -- Heap sort
 
+-- unefficient realisation, even with vectors. 
+
 type Index = Int
 
 left :: Index -> Index
@@ -51,22 +55,14 @@ left i = 2 * i + 1
 right :: Index -> Index
 right i = 2 * i + 2
 
-swap :: Eq a => [a] -> Index -> Index -> [a]
-swap [] _ _ = []
-swap [x] _ _ = [x]
+swap :: Eq a => V.Vector a -> Index -> Index -> V.Vector a
 swap xs index newIndex =
-  if correct index && correct newIndex && index < newIndex
-    then left ++ [newItem] ++ middle ++ [item] ++ right
-    else error $ "Incorrect index in replace" ++ show (index, newIndex)
-      where
-        correct i = i < length xs && i >= 0
-        item = xs !! index
-        newItem = xs !! newIndex
-        left = take index xs
-        middle = take (newIndex - index - 1) (drop (index + 1) xs)
-        right = drop (newIndex + 1) xs
+  if correct index && correct newIndex && index <= newIndex
+    then V.unsafeUpd xs [(index, V.unsafeIndex xs newIndex), (newIndex, V.unsafeIndex xs index)]
+    else throw $ IndexOutOfBounds $ "Incorrect index in swap" ++ show (index, newIndex)
+      where correct i = i < V.length xs && i >= 0
 
-maxHeapify :: Ord a => [a] -> Index -> Int -> [a]
+maxHeapify :: Ord a => V.Vector a -> Index -> Int -> V.Vector a
 maxHeapify heap i heapSize =
   if i == largest
     then heap
@@ -76,27 +72,27 @@ maxHeapify heap i heapSize =
         r = right i
         getLargest :: Index -> Index -> Index
         getLargest childIndex currentIndex =
-          if childIndex <= heapSize && ((heap !! childIndex) > (heap !! currentIndex))
+          if childIndex <= heapSize && ((heap V.! childIndex) > (heap V.! currentIndex))
             then childIndex
             else currentIndex
         largest = getLargest r $ getLargest l i
 
-buildMaxHeap :: Ord a => [a] -> [a]
-buildMaxHeap xs = iter xs (div (length xs) 2)
+buildMaxHeap :: Ord a => V.Vector a -> V.Vector a
+buildMaxHeap xs = iter xs (div (V.length xs) 2)
   where
-    iter :: Ord a => [a] -> Int -> [a]
+    iter :: Ord a => V.Vector a -> Int -> V.Vector a
     iter ys 0 = ys
     iter ys len =
-      let next = len - 1 in iter (maxHeapify ys next (length xs - 1)) next
+      let next = len - 1 in iter (maxHeapify ys next (V.length xs - 1)) next
 
-heapSort :: Ord a => [a] -> [a]
-heapSort [] = []
-heapSort xs = iter heap (length xs - 1)
-  where
-    heap = buildMaxHeap xs
-    iter :: Ord a => [a] -> Int -> [a]
-    iter acc 0 = acc
-    iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+heapSort :: Ord a => V.Vector a -> V.Vector a
+heapSort xs = if V.null xs then xs
+  else iter heap (V.length xs - 1)
+    where
+      heap = buildMaxHeap xs
+      iter :: Ord a => V.Vector a -> Int -> V.Vector a
+      iter acc 0 = acc
+      iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
 
 quickSort :: Ord a => [a] -> [a]
 quickSort [] = []
