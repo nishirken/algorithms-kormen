@@ -11,7 +11,7 @@ import Sort (
   , maxHeapify
   , swap
   , buildMaxHeap
-  , heapSort
+  , heapSort'
   , quickSort
   )
 import Control.Exception.Base (ArrayException, evaluate)
@@ -45,6 +45,6 @@ sortSpec =
           testVector = V.fromList [5, 3, 17, 10, 84, 19, 6, 22, 9]
           in buildMaxHeap testVector `shouldBe` expected
 
-      it "Heap sort" $ property $ \xs -> heapSort (V.fromList (xs :: [Int])) `shouldBe` (V.fromList . sort) xs
+      it "Heap sort" $ property $ \xs -> heapSort' (V.fromList (xs :: [Int])) `shouldBe` (V.fromList . sort) xs
 
     it "quickSort" $ testSort quickSort

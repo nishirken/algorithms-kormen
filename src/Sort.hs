@@ -4,6 +4,7 @@ module Sort (
   , mergeSort
   , maxHeapify
   , buildMaxHeap
+  , heapSort'
   , heapSort
   , swap
   , quickSort
@@ -12,6 +13,7 @@ module Sort (
 import Control.Exception.Base (ArrayException (IndexOutOfBounds), throw)
 import Data.List (foldl', partition)
 import qualified Data.Vector as V
+import qualified Data.Heap as H
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldl' insert []
@@ -85,14 +87,21 @@ buildMaxHeap xs = iter xs (div (V.length xs) 2)
     iter ys len =
       let next = len - 1 in iter (maxHeapify ys next (V.length xs - 1)) next
 
-heapSort :: Ord a => V.Vector a -> V.Vector a
-heapSort xs = if V.null xs then xs
+heapSort' :: Ord a => V.Vector a -> V.Vector a
+heapSort' xs = if V.null xs then xs
   else iter heap (V.length xs - 1)
     where
       heap = buildMaxHeap xs
       iter :: Ord a => V.Vector a -> Int -> V.Vector a
       iter acc 0 = acc
       iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
+
+-- more efficient, but much less than quickSort
+
+heapSort :: Ord a => [a] -> [a]
+heapSort = H.sort
+
+-- quick sort
 
 quickSort :: Ord a => [a] -> [a]
 quickSort [] = []

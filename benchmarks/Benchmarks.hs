@@ -1,4 +1,4 @@
-import Sort (insertionSort, mergeSort, bubbleSort, quickSort)
+import Sort (insertionSort, mergeSort, bubbleSort, quickSort, heapSort', heapSort)
 import Criterion.Main (defaultMainWith, defaultConfig, bgroup, bench, nf, Benchmark, env)
 import Criterion.Types (reportFile)
 import Test.QuickCheck (generate, vectorOf, arbitrary, Gen)
@@ -28,5 +28,6 @@ main = defaultMainWith defaultConfig [
     -- benchCases insertionSort "insertion sort" defaultBenchList
     -- , benchCases mergeSort "merge sort" defaultBenchList
     -- , benchCases bubbleSort "bubble sort" minBenchList
-    benchCases quickSort "quick sort" defaultBenchList
+    -- benchCases quickSort "quick sort" defaultBenchList
+    benchCases heapSort "heap sort" defaultBenchList
   ]

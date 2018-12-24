@@ -25,6 +25,7 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+    - heaps
     - vector
 
 executables:
@@ -37,6 +38,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - vector
+    - heaps
     - algorithms-kormen
 
   algo-bench:
@@ -49,6 +51,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - vector
+    - heaps
     - algorithms-kormen
     - criterion
     - QuickCheck
@@ -63,6 +66,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - vector
+    - heaps
     - algorithms-kormen
     - hspec
     - QuickCheck
