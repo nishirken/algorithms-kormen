@@ -1,5 +1,8 @@
 import Test.Hspec
 import SortSpec
+import DataStructuresSpec
 
 main :: IO ()
-main = hspec sortSpec
+main = hspec $ do
+  sortSpec
+  dataStructuresSpec
