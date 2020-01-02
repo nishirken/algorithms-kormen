@@ -11,11 +11,10 @@ generateLists :: IO [[Int]]
 generateLists = traverse (\n -> generate $ vectorOf n (arbitrary :: Gen Int)) defaultBenchList
 
 cases =
-  [
-    ("merge sort", mergeSort)
-    , ("heap sort", heapSort)
-    , ("quick sort", quickSort)
-    , ("optimal sort", optimalSort)
+  [ ("merge sort", mergeSort)
+  , ("heap sort", heapSort)
+  , ("quick sort", quickSort)
+  , ("optimal sort", optimalSort)
   ]
 
 main :: IO ()
