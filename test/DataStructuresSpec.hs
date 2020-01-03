@@ -1,9 +1,10 @@
 module DataStructuresSpec where
 
 import Test.Hspec (context, describe, it, Spec, shouldBe, shouldThrow, Selector)
-import Test.QuickCheck (Property, property)
+import Control.Exception.Base (ArrayException, evaluate)
 import qualified DataStructures.Stack as S
 import qualified DataStructures.Queue as Q
+import qualified DataStructures.LinkedList as L
 
 dataStructuresSpec :: Spec
 dataStructuresSpec = describe "DataStructuresSpec" $ do
@@ -36,3 +37,24 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
     it "isEmpty with not empty" $ Q.isEmpty (Q.fromList [1]) `shouldBe` False
     it "size with empty" $ Q.size shownEmpty `shouldBe` 0
     it "size with not empty" $ Q.size (Q.fromList [1]) `shouldBe` 1
+
+  context "LinkedList" $ do
+    let xs = L.LinkedItem (Just (L.LinkedItem (Just (L.LinkedItem Nothing 4 "2")) 2 "44")) 1 "22"
+    it "search" $ L.search xs 4 `shouldBe` Just "2"
+    it "search with singleton" $ L.search (L.LinkedItem Nothing 1 "2") 1 `shouldBe` Just "2"
+    it "search with wrong key" $ L.search xs 22 `shouldBe` Nothing
+    it "first" $ L.first xs `shouldBe` "22"
+    it "first with singleton" $ L.first (L.LinkedItem Nothing 1 "2") `shouldBe` "2"
+    it "rest" $ L.rest xs `shouldBe` Just (L.LinkedItem (Just (L.LinkedItem Nothing 4 "2")) 2 "44")
+    it "rest with singleton" $ L.rest (L.LinkedItem Nothing 1 "2") `shouldBe` Nothing
+    it "insert" $ (L.first $ L.insert (L.LinkedItem Nothing 1 "2") 2 "4") `shouldBe` "4"
+    it "delete in mid" $ L.delete xs 2 `shouldBe` L.LinkedItem (Just (L.LinkedItem Nothing 4 "2")) 1 "22"
+    it "delete fst" $ L.delete xs 1 `shouldBe` L.LinkedItem (Just (L.LinkedItem Nothing 4 "2")) 2 "44"
+    it "delete last with many items" $ L.delete xs 4 `shouldBe` L.LinkedItem (Just (L.LinkedItem Nothing 2 "44")) 1 "22"
+    it "delete last with one item" $ (evaluate $ L.delete (L.LinkedItem Nothing 4 "22") 4) `shouldThrow` (const True :: Selector ArrayException)
+    it "join with singleton fst" $ L.join (L.LinkedItem Nothing 1 "1") xs `shouldBe` L.LinkedItem (Just xs) 1 "1"
+    it "join" $ do
+      let
+        xs' = L.LinkedItem (Just (L.LinkedItem Nothing 22 "1")) 11 "1"
+        expect = L.LinkedItem (Just (L.LinkedItem (Just xs) 22 "1")) 11 "1"
+      L.join xs' xs `shouldBe` expect
