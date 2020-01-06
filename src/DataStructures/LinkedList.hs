@@ -1,7 +1,7 @@
 module DataStructures.LinkedList where
 
 import Control.Exception.Base (ArrayException (IndexOutOfBounds), throw)
-
+-- TODO add wrapper for the head of the list, so list can be empty 
 data LinkedList a = LinkedItem
   { _next :: Maybe (LinkedList a)
   , _key :: Int
