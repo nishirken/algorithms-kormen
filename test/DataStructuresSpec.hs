@@ -2,9 +2,12 @@ module DataStructuresSpec where
 
 import Test.Hspec (context, describe, it, Spec, shouldBe, shouldThrow, Selector)
 import Control.Exception.Base (ArrayException, evaluate)
+import Test.QuickCheck (property)
 import qualified DataStructures.Stack as S
 import qualified DataStructures.Queue as Q
 import qualified DataStructures.LinkedList as L
+import qualified DataStructures.BinaryTree as B
+import Arbitrary
 
 dataStructuresSpec :: Spec
 dataStructuresSpec = describe "DataStructuresSpec" $ do
@@ -58,3 +61,54 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
         xs' = L.LinkedItem (Just (L.LinkedItem Nothing 22 "1")) 11 "1"
         expect = L.LinkedItem (Just (L.LinkedItem (Just xs) 22 "1")) 11 "1"
       L.join xs' xs `shouldBe` expect
+
+  context "BinaryTree" $ do
+    let
+      tree = B.Node
+        (Just $ B.Node (Just $ B.Node Nothing 2 "2" Nothing) 5 "5" (Just $ B.Node Nothing 5 "5" Nothing))
+        6
+        "6"
+        (Just $ B.Node Nothing 7 "7" (Just (B.Node Nothing 8 "8" Nothing)))
+      secondTree = (B.Node (Just $ B.Node Nothing 1 "1" Nothing) 3 "3" (Just $ B.Node Nothing 4 "4" Nothing))
+    it "toList" $ map snd (B.toList tree) `shouldBe` ["2", "5", "5", "6", "7", "8"]
+    it "toList with one value" $ B.toList (B.Node Nothing 1 "1" Nothing) `shouldBe` [(1, "1")]
+    it "size 1" $ B.size tree `shouldBe` 6
+    it "size 2" $ B.size secondTree `shouldBe` 3
+    it "search 6" $ B.search tree 6 "6" `shouldBe` Just (6, "6")
+    it "search 5" $ B.search tree 5 "5" `shouldBe` Just (5, "5")
+    it "search 7" $ B.search tree 7 "7" `shouldBe` Just (7, "7")
+    it "maximum" $ B.max' tree `shouldBe` "8"
+    it "minimum" $ B.min' tree `shouldBe` "2"
+    it "insert in single" $ B.insert (B.Node Nothing 1 "1" Nothing) 2 "2" `shouldBe` B.Node Nothing 1 "1" (Just $ B.Node Nothing 2 "2" Nothing)
+    it "insert in 3" $ do
+      let
+        xs = B.Node (Just $ B.Node Nothing 0 "0" Nothing) 1 "1" (Just $ B.Node Nothing 4 "4" Nothing)
+        expect = B.Node (Just $ B.Node Nothing 0 "0" Nothing) 1 "1" (Just $ B.Node (Just $ B.Node Nothing 3 "3" Nothing) 4 "4" Nothing)
+      B.insert xs 3 "3" `shouldBe` expect
+    it "insert toList" $ map snd (B.toList (B.insert tree 7 "7")) `shouldBe` ["2", "5", "5", "6", "7", "7", "8"]
+    it "insert max" $ B.max' (B.insert tree 11 "11") `shouldBe` "11"
+    it "insert min" $ B.min' (B.insert tree 1 "1") `shouldBe` "1"
+    it "insert search" $ property $
+      \x y z -> B.search (B.insert (x :: B.BinaryTree Int String) y z) y z `shouldBe` Just (y, z)
+    it "insert size" $ property $
+      \x y z -> B.size (B.insert (x :: B.BinaryTree Int String) y z) `shouldBe` (B.size x) + 1
+    it "join two nodes" $
+      B.join (B.Node Nothing 1 "1" Nothing) (B.Node Nothing 2 "2" Nothing) `shouldBe` (B.Node Nothing 1 "1" (Just $ B.Node Nothing 2 "2" Nothing))
+    it "join left to right" $ do
+      let
+        expect = B.Node
+          (Just $ B.Node
+            (Just $ B.Node (Just $ B.Node Nothing 1 "1" Nothing) 2 "2" (Just $ B.Node Nothing 3 "3" (Just $ B.Node Nothing 4 "4" Nothing)))
+            5
+            "5"
+            (Just $ B.Node Nothing 5 "5" Nothing))
+          6
+          "6"
+          (Just $ B.Node Nothing 7 "7" (Just (B.Node Nothing 8 "8" Nothing)))
+      B.join tree secondTree `shouldBe` expect
+    it "join size" $ property $
+      \x y -> B.size (B.join (x :: B.BinaryTree Int Int) (y :: B.BinaryTree Int Int)) `shouldBe` B.size (B.join y x)
+    it "delete toList 5" $ ((map fst) . B.toList <$> (B.delete tree 5)) `shouldBe` Just [2, 5, 6, 7, 8]
+    it "delete toList 6" $ ((map fst) . B.toList <$> (B.delete tree 6)) `shouldBe` Just [2, 5, 5, 7, 8]
+    it "delete max" $ (B.max' <$> (B.delete tree 8)) `shouldBe` Just "7"
+    it "delete min" $ (B.min' <$> (B.delete tree 2)) `shouldBe` Just "5"
