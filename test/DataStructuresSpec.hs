@@ -115,27 +115,28 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
     it "delete min" $ (B.min' <$> (B.delete tree 2)) `shouldBe` Just "5"
     it "invert" $ do
       let
-        xs = B.BinaryTree
-          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 1 "1" Nothing) 2 "2" (Just $ B.BinaryTree Nothing 3 "3" Nothing))
+        xs = B.Node
+          (Just $ B.Node (Just $ B.Node Nothing 1 "1" Nothing) 2 "2" (Just $ B.Node Nothing 3 "3" Nothing))
           4
           "4"
-          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 6 "6" Nothing) 7 "7" (Just $ B.BinaryTree Nothing 9 "9" Nothing))
-        ys = B.BinaryTree
-          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 9 "9" Nothing) 7 "7" (Just $ B.BinaryTree Nothing 6 "6" Nothing))
+          (Just $ B.Node (Just $ B.Node Nothing 6 "6" Nothing) 7 "7" (Just $ B.Node Nothing 9 "9" Nothing))
+        ys = B.Node
+          (Just $ B.Node (Just $ B.Node Nothing 9 "9" Nothing) 7 "7" (Just $ B.Node Nothing 6 "6" Nothing))
           4
           "4"
-          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 3 "3" Nothing) 2 "2" (Just $ B.BinaryTree Nothing 1 "1" Nothing))
-      invert xs `shouldBe` ys
+          (Just $ B.Node (Just $ B.Node Nothing 3 "3" Nothing) 2 "2" (Just $ B.Node Nothing 1 "1" Nothing))
+      B.invert xs `shouldBe` ys
 
   context "RedBlackTree" $ do
     let
       tree = RB.Node
-        (Just $ RB.Node (Just $ RB.Node Nothing 1 Nothing) 2 (Just $ RB.Node Nothing 3 (Just $ RB.Node Nothing 4 Nothing)))
+        (Just $ RB.Node (Just $ RB.Node Nothing 1 RB.Red Nothing) 2 RB.Red (Just $ RB.Node Nothing 3 RB.Red (Just $ RB.Node Nothing 4 RB.Red Nothing)))
         6
-        (Just $ RB.Node Nothing 7 (Just $ B.Node Nothing 8 Nothing))
+        RB.Red
+        (Just $ RB.Node Nothing 7 RB.Red (Just $ RB.Node Nothing 8 RB.Red Nothing))
     it "search 6" $ RB.search tree 6 `shouldBe` Just 6
     it "search 8" $ RB.search tree 8 `shouldBe` Just 8
     it "search 3" $ RB.search tree 3 `shouldBe` Just 3
     it "search 10" $ RB.search tree 10 `shouldBe` Nothing
-    it "min" $ RB.min tree `shouldBe` 1
-    it "max" $ RB.max tree `shouldBe` 8
+    it "min" $ RB.min' tree `shouldBe` 1
+    it "max" $ RB.max' tree `shouldBe` 8

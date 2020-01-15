@@ -85,5 +85,5 @@ delete (Node (Just left) key value (Just right)) key' =
     then Just $ Node (delete left key') key value (Just right)
     else Just $ Node (Just right) key value (delete right key'))
 
-invert :: BinaryTree a b -> BinaryTree a b -> BinaryTree a b
+invert :: BinaryTree a b -> BinaryTree a b
 invert = undefined
