@@ -50,7 +50,7 @@ bubbleSort xs = outer xs 0
 
 -- Heap sort
 
--- unefficient realisation, even with vectors. 
+-- unefficient realisation, even with vectors.
 
 type Index = Int
 
@@ -119,5 +119,8 @@ quickSort (x:xs) = quickSort lt ++ eq ++ quickSort gt
 
 optimalSort :: Ord a => [a] -> [a]
 optimalSort [] = []
-optimalSort [x] = [x]
-optimalSort xs = if ((== 10) . length . take 10) xs then quickSort xs else insertionSort xs
+optimalSort xs = if isSmall xs 0 then insertionSort xs else quickSort xs
+  where
+    isSmall :: Ord a => [a] -> Int -> Bool
+    isSmall [] _ = True
+    isSmall !(y:ys) i = if i > 10 then False else isSmall ys (i + 1)
