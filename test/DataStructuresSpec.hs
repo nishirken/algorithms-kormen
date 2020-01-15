@@ -113,6 +113,19 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
     it "delete toList 6" $ ((map fst) . B.toList <$> (B.delete tree 6)) `shouldBe` Just [2, 5, 5, 7, 8]
     it "delete max" $ (B.max' <$> (B.delete tree 8)) `shouldBe` Just "7"
     it "delete min" $ (B.min' <$> (B.delete tree 2)) `shouldBe` Just "5"
+    it "invert" $ do
+      let
+        xs = B.BinaryTree
+          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 1 "1" Nothing) 2 "2" (Just $ B.BinaryTree Nothing 3 "3" Nothing))
+          4
+          "4"
+          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 6 "6" Nothing) 7 "7" (Just $ B.BinaryTree Nothing 9 "9" Nothing))
+        ys = B.BinaryTree
+          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 9 "9" Nothing) 7 "7" (Just $ B.BinaryTree Nothing 6 "6" Nothing))
+          4
+          "4"
+          (Just $ B.BinaryTree (Just $ B.BinaryTree Nothing 3 "3" Nothing) 2 "2" (Just $ B.BinaryTree Nothing 1 "1" Nothing))
+      invert xs `shouldBe` ys
 
   context "RedBlackTree" $ do
     let
