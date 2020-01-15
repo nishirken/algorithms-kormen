@@ -7,6 +7,7 @@ import qualified DataStructures.Stack as S
 import qualified DataStructures.Queue as Q
 import qualified DataStructures.LinkedList as L
 import qualified DataStructures.BinaryTree as B
+import qualified DataStructures.RedBlackTree as RB
 import Arbitrary
 
 dataStructuresSpec :: Spec
@@ -112,3 +113,16 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
     it "delete toList 6" $ ((map fst) . B.toList <$> (B.delete tree 6)) `shouldBe` Just [2, 5, 5, 7, 8]
     it "delete max" $ (B.max' <$> (B.delete tree 8)) `shouldBe` Just "7"
     it "delete min" $ (B.min' <$> (B.delete tree 2)) `shouldBe` Just "5"
+
+  context "RedBlackTree" $ do
+    let
+      tree = RB.Node
+        (Just $ RB.Node (Just $ RB.Node Nothing 1 Nothing) 2 (Just $ RB.Node Nothing 3 (Just $ RB.Node Nothing 4 Nothing)))
+        6
+        (Just $ RB.Node Nothing 7 (Just $ B.Node Nothing 8 Nothing))
+    it "search 6" $ RB.search tree 6 `shouldBe` Just 6
+    it "search 8" $ RB.search tree 8 `shouldBe` Just 8
+    it "search 3" $ RB.search tree 3 `shouldBe` Just 3
+    it "search 10" $ RB.search tree 10 `shouldBe` Nothing
+    it "min" $ RB.min tree `shouldBe` 1
+    it "max" $ RB.max tree `shouldBe` 8
