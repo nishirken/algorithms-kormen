@@ -90,3 +90,6 @@ invert xs@(Node Nothing _ _ Nothing) = xs
 invert (Node (Just left) key value Nothing) = Node Nothing key value (Just $ invert left)
 invert (Node Nothing key value (Just right)) = Node (Just $ invert right) key value Nothing
 invert (Node (Just left) key value (Just right)) = Node (Just $ invert right) key value (Just $ invert left)
+
+findCommonParent :: a -> a' -> BinaryTree a b -> Maybe (a, b)
+findCommonParent _ _ (Node Nothing key value Nothing) = Nothing
