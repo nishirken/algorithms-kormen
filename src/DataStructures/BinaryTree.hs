@@ -91,5 +91,14 @@ invert (Node (Just left) key value Nothing) = Node Nothing key value (Just $ inv
 invert (Node Nothing key value (Just right)) = Node (Just $ invert right) key value Nothing
 invert (Node (Just left) key value (Just right)) = Node (Just $ invert right) key value (Just $ invert left)
 
-findCommonParent :: a -> a' -> BinaryTree a b -> Maybe (a, b)
-findCommonParent _ _ (Node Nothing key value Nothing) = Nothing
+findCommonParent :: a -> a -> BinaryTree a b -> Maybe a
+findCommonParent _ _ (Node Nothing key _ Nothing) = Nothing
+findCommonParent key1 key2 (Node left key _ right) =
+  if key == key1 || key == key2
+  then Just key
+  else (if l /= Nothing && r /= Nothing then Just key else leftOrRight l r)
+    where
+      l = findCommonParent key1 key2 <$> left
+      r = findCommonParent key1 key2 <$> right
+      leftOrRight (Just x) Nothing = x
+      leftOrRight Nothing (Just x) = x
