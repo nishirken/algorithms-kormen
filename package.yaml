@@ -27,6 +27,9 @@ library:
   dependencies:
     - heaps
     - vector
+    - mtl
+    - random
+    - containers
 
 executables:
   algo-exe:
