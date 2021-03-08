@@ -45,7 +45,6 @@ executables:
     - algorithms-kormen
 
   algo-bench:
-    benchmarks:
     main:                Benchmarks.hs
     source-dirs:         benchmarks
     ghc-options:
