@@ -25,11 +25,11 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
-    - heaps
     - vector
     - mtl
     - random
     - containers
+    - primitive
 
 executables:
   algo-exe:
@@ -41,8 +41,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - vector
-    - heaps
     - algorithms-kormen
+    - primitive
 
   algo-bench:
     main:                Benchmarks.hs
@@ -53,7 +53,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - vector
-    - heaps
+    - primitive
     - algorithms-kormen
     - criterion
     - QuickCheck
@@ -68,7 +68,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - vector
-    - heaps
+    - primitive
     - algorithms-kormen
     - hspec
     - QuickCheck

@@ -4,12 +4,16 @@ import Criterion.Types (reportFile)
 import Test.QuickCheck (generate, vectorOf, arbitrary, Gen)
 import qualified Data.Vector as V
 
-defaultBenchList = [0, 3, 10, 50, 100, 1000, 10000, 100000, 1000000]
+defaultBenchList = [0, 1, 3, 4, 5, 10, 50, 100, 1000, 10000, 100000, 1000000]
 minBenchList = take (length defaultBenchList - 2) defaultBenchList
 
-generateLists :: IO [[Int]]
-generateLists = traverse (\n -> generate $ vectorOf n (arbitrary :: Gen Int)) defaultBenchList
+genList :: Int -> IO [Int]
+genList len = generate $ vectorOf len (arbitrary :: Gen Int)
 
+generateLists :: IO [[Int]]
+generateLists = traverse genList minBenchList
+
+cases :: (Show a, Ord a) => [(String, [a] -> [a])]
 cases =
   [
     ("merge sort", mergeSort)

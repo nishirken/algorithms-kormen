@@ -4,19 +4,16 @@ module Sort (
   bubbleSort
   , insertionSort
   , mergeSort
-  , maxHeapify
-  , buildMaxHeap
-  , heapSort'
   , heapSort
-  , swap
   , quickSort
   , optimalSort
   ) where
 
+import Sort.HeapSort (heapSort)
+
 import Control.Exception.Base (ArrayException (IndexOutOfBounds), throw)
 import Data.List (foldl', partition)
 import qualified Data.Vector as V
-import qualified Data.Heap as H
 
 insertionSort :: Ord a => [a] -> [a]
 insertionSort = foldl' insert []
@@ -48,62 +45,6 @@ bubbleSort xs = outer xs 0
     inner [z] = [z]
     inner !(z:z':zs) = if z > z' then z' : inner (z:zs) else z : inner (z':zs)
 
--- Heap sort
-
--- unefficient realisation, even with vectors.
-
-type Index = Int
-
-left :: Index -> Index
-left i = 2 * i + 1
-
-right :: Index -> Index
-right i = 2 * i + 2
-
-swap :: Eq a => V.Vector a -> Index -> Index -> V.Vector a
-swap xs index newIndex =
-  if correct index && correct newIndex && index <= newIndex
-    then V.unsafeUpd xs [(index, V.unsafeIndex xs newIndex), (newIndex, V.unsafeIndex xs index)]
-    else throw $ IndexOutOfBounds $ "Incorrect index in swap" ++ show (index, newIndex)
-      where correct i = i < V.length xs && i >= 0
-
-maxHeapify :: Ord a => V.Vector a -> Index -> Int -> V.Vector a
-maxHeapify heap i heapSize =
-  if i == largest
-    then heap
-    else maxHeapify (swap heap i largest) largest heapSize
-      where
-        l = left i
-        r = right i
-        getLargest :: Index -> Index -> Index
-        getLargest childIndex currentIndex =
-          if childIndex <= heapSize && ((heap V.! childIndex) > (heap V.! currentIndex))
-            then childIndex
-            else currentIndex
-        largest = getLargest r $ getLargest l i
-
-buildMaxHeap :: Ord a => V.Vector a -> V.Vector a
-buildMaxHeap xs = iter xs (div (V.length xs) 2)
-  where
-    iter :: Ord a => V.Vector a -> Int -> V.Vector a
-    iter ys 0 = ys
-    iter ys len =
-      let next = len - 1 in iter (maxHeapify ys next (V.length xs - 1)) next
-
-heapSort' :: Ord a => V.Vector a -> V.Vector a
-heapSort' xs = if V.null xs then xs
-  else iter heap (V.length xs - 1)
-    where
-      heap = buildMaxHeap xs
-      iter :: Ord a => V.Vector a -> Int -> V.Vector a
-      iter acc 0 = acc
-      iter acc i = iter (maxHeapify (swap acc 0 i) 0 (i - 1)) (i - 1)
-
--- more efficient, but much less than quickSort
-
-heapSort :: Ord a => [a] -> [a]
-heapSort = H.sort
-
 -- quick sort
 
 quickSort :: Ord a => [a] -> [a]
@@ -119,8 +60,8 @@ quickSort (x:xs) = quickSort lt ++ eq ++ quickSort gt
 
 optimalSort :: Ord a => [a] -> [a]
 optimalSort [] = []
-optimalSort xs = if isSmall xs 0 then insertionSort xs else quickSort xs
-  where
-    isSmall :: Ord a => [a] -> Int -> Bool
-    isSmall [] _ = True
-    isSmall !(y:ys) i = if i > 10 then False else isSmall ys (i + 1)
+optimalSort [x] = [x]
+optimalSort [x, y] = if x < y then [x, y] else [y, x]
+optimalSort xs@[x, y, z] = insertionSort xs
+optimalSort xs@[x, y, z, z'] = insertionSort xs
+optimalSort xs = quickSort xs
