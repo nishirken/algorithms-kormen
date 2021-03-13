@@ -126,10 +126,10 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
           "4"
           (Just $ B.Node (Just $ B.Node Nothing 3 "3" Nothing) 2 "2" (Just $ B.Node Nothing 1 "1" Nothing))
       B.invert xs `shouldBe` ys
-    it "find common parent 1" $ B.findCommonParent 1 "1" 2 "2" (B.Node Nothing 1 "1" Nothing) `shouldBe` Nothing
-    it "find common parent 2" $ B.findCommonParent 2 "2" 7 "7" tree `shouldBe` (Just (7, "7"))
-    it "find common parent 3" $ B.findCommonParent 6 "6" 5 "5" tree `shouldBe` Nothing
-    it "find common parent 4" $ B.findCommonParent 5 "5" 2 "2" tree `shouldBe` (Just (6, "6"))
+    it "findCommonParent1" $ B.findCommonParent (1, "1") (2, "2") (B.Node Nothing 1 "1" Nothing) `shouldBe` Nothing
+    it "findCommonParent2" $ B.findCommonParent (2, "2") (7, "7") tree `shouldBe` (Just (6, "6"))
+    it "findCommonParent3" $ B.findCommonParent (6, "6") (5, "5") tree `shouldBe` (Just (6, "6"))
+    it "findCommonParent4" $ B.findCommonParent (5, "5") (2, "2") tree `shouldBe` (Just (6, "6"))
 
   context "RedBlackTree" $ do
     let
