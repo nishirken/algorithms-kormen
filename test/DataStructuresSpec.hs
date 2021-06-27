@@ -144,3 +144,13 @@ dataStructuresSpec = describe "DataStructuresSpec" $ do
     it "search 10" $ RB.search tree 10 `shouldBe` Nothing
     it "min" $ RB.min' tree `shouldBe` 1
     it "max" $ RB.max' tree `shouldBe` 8
+
+    let
+      a = RB.Node Nothing 4 RB.Black Nothing
+      b = RB.Node Nothing 2 RB.Red Nothing
+      c = RB.Node Nothing 3 RB.Red Nothing
+      y = RB.Node (Just b) 1 RB.Black (Just c)
+      x = RB.Node (Just a) 5 RB.Red (Just y)
+      y' = RB.Node (Just $ RB.Node (Just a) 5 RB.Red (Just b)) 1 RB.Black (Just c)
+    it "leftRotate" $ RB.leftRotate x `shouldBe` y'
+    it "rightRotate" $ RB.rightRotate y' `shouldBe` x

@@ -32,3 +32,16 @@ min' (Node (Just left) key _ _) = min' left
 max' :: RedBlackTree a -> a
 max' (Node _ key _ Nothing) = key
 max' (Node _ key _ (Just right)) = max' right
+
+leftRotate :: RedBlackTree a -> RedBlackTree a
+leftRotate tree@(Node _ _ _ Nothing) = tree
+leftRotate (Node a keyX colorX (Just y)) = case y of
+  (Node b keyY colorY c) -> Node (Just $ Node a keyX colorX b) keyY colorY c
+
+rightRotate :: RedBlackTree a -> RedBlackTree a
+rightRotate tree@(Node Nothing _ _ _) = tree
+rightRotate (Node (Just x) keyY colorY c) = case x of
+  (Node a keyX colorX b) -> Node a keyX colorX (Just $ Node b keyY colorY c)
+
+fixup :: RedBlackTree a -> RedBlackTree a
+fixup = undefined
